@@ -26,15 +26,8 @@ module PdfHelper
     prince = Princely.new()
     # Sets style sheets on PDF renderer
     prince.add_style_sheets(*options[:stylesheets].collect{|style| stylesheet_file_path(style)})
-    
+
     html_string = render_to_string(:template => options[:template], :layout => options[:layout])
-    
-    # Make all paths relative, on disk paths...
-    html_string.gsub!(".com:/",".com/") # strip out bad attachment_fu URLs
-    html_string.gsub!( /src=["']+([^:]+?)["']/i ) { |m| "src=\"#{Rails.public_path}/#{$1}\"" } # re-route absolute paths
-    
-    # Remove asset ids on images with a regex
-    html_string.gsub!( /src=["'](\S+\?\d*)["']/i ) { |m| "src=\"#{$1.split('?').first}\"" }
     
     # Send the generated PDF file from our html string.
     if filename = options[:filename] || options[:file]
